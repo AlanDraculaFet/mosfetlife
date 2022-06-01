@@ -2,6 +2,8 @@ import {displayError} from "../common.js"
 
 const nickname_input = document.getElementById("nickname");
 const password_input = document.getElementById("password");
+const job_title_input = document.getElementById("job-title");
+const company_input = document.getElementById("company");
 const email_input = document.getElementById("email");
 
 password_input.onpaste = e => e.preventDefault();
@@ -9,6 +11,10 @@ password_input.onpaste = e => e.preventDefault();
 function setError(message) {
 	displayError(message);
 	password_input.value = "";
+	nickname_input.value = "";
+	email_input.value = "";
+	job_title_input.value = "";
+	company_input.value = "";
 }
 
 document.getElementById("submit-button").onclick = e => {
@@ -28,7 +34,7 @@ document.getElementById("submit-button").onclick = e => {
         return setError("Email is required");
     }
 
-    if (! email.includes("@")) {
+    if (! email.includes("@") || ! email.includes(".com")) {
         return setError("Email is not valid");
     }
 
@@ -42,6 +48,14 @@ document.getElementById("submit-button").onclick = e => {
 
     if (password === nickname) {
         return setError("Password and nickname must not be the same");
+    }
+
+    if (password === email) {
+        return setError("Password and email must not be the same");
+    }
+
+    if (nickname === email) {
+        return setError("Nickname and email must not be the same");
     }
 
     regex = /[A-Z]/;
@@ -108,9 +122,22 @@ document.getElementById("submit-button").onclick = e => {
         return setError("Password must contain at least one uppercase letter preceded by a lowercase letter");
     }
 
-    regex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
-    if (! regex.test(password)) {
-        return setError("Password must contain at least one emoji");
+    if (nickname.length < 3) {
+        return setError("Nickname must be at least 3 characters");
+    }
+
+    if (nickname.length > 10) {
+        return setError("Nickname must be no longer than 10 characters");
+    }
+
+    regex = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (regex.test(nickname) || nickname.includes(" ")) {
+        return setError("Nickname must not contain special characters");
+    }
+
+    regex = /0oO1li/
+    if (regex.test(password)) {
+        return setError("Password must not contain any of the following characters: oO01il");
     }
 
     regex = /[aeiouAEIOU]/
@@ -121,6 +148,11 @@ document.getElementById("submit-button").onclick = e => {
     regex = /[2357]/
     if (regex.test(password)) {
         return setError("Password must not contain prime numbers");
+    }
+
+    regex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
+    if (! regex.test(password)) {
+        return setError("Password must contain at least one emoji");
     }
 
     regex = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
